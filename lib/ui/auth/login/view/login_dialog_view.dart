@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:app_creaty_mobile/commons/enums/validation_error.dart';
 import 'package:app_creaty_mobile/commons/extensions/snack_bar_extension.dart';
 import 'package:app_creaty_mobile/commons/extensions/theme_extension.dart';
-import 'package:app_creaty_mobile/domain/models/app_creaty_creator.dart';
-import 'package:app_creaty_mobile/ui/app/app.dart';
 import 'package:app_creaty_mobile/ui/auth/login/cubit/login_cubit.dart';
 import 'package:app_creaty_mobile/ui/auth/login/cubit/login_state.dart';
 import 'package:app_creaty_mobile/widgets/widgets.dart';
@@ -170,18 +168,9 @@ class _LoginDialogViewState extends State<LoginDialogView> {
                   ),
                   gap16,
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+
                     children: [
-                      FilledButton.tonal(
-                        child: const Text(
-                          'Localhost',
-                        ),
-                        onPressed: () => context
-                          ..read<AppBloc>()
-                              .add(ChangeUser(user: AppCreatyCreator.local()))
-                          ..pop()
-                          ..showSnackBar('Login with localhost user'),
-                      ),
-                      const Spacer(),
                       Row(
                         children: [
                           StreamBuilder(

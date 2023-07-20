@@ -17,6 +17,8 @@ class HomeCubit extends Cubit<HomeState> {
     appStateSubcription = appBloc.stream.distinct().listen((state) {
       if (state is Auth && !state.user.isLocalhost) {
         fetchProjectsOfUser(state.user);
+      } else {
+        logout();
       }
     });
   }
@@ -46,6 +48,10 @@ class HomeCubit extends Cubit<HomeState> {
       addError(e, s);
       emit(state.copyWith(loadingStatus: LoadingStatus.error));
     }
+  }
+
+  void logout() {
+    emit(state.copyWith(projects: []));
   }
 
   @override

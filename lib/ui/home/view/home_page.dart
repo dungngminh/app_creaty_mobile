@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:after_layout/after_layout.dart';
+import 'package:app_creaty_mobile/commons/extensions/snack_bar_extension.dart';
 import 'package:app_creaty_mobile/domain/repository/project_repository.dart';
 import 'package:app_creaty_mobile/ui/app/app.dart';
 import 'package:app_creaty_mobile/ui/auth/auth.dart';
@@ -8,9 +9,9 @@ import 'package:app_creaty_mobile/ui/auth/widgets/sign_out_dialog.dart';
 import 'package:app_creaty_mobile/ui/home/cubit/home_cubit.dart';
 import 'package:app_creaty_mobile/ui/home/cubit/home_state.dart';
 import 'package:app_creaty_mobile/ui/project/project_view.dart';
-import 'package:app_creaty_mobile/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -56,29 +57,16 @@ class _HomeViewState extends State<HomeView> with AfterLayoutMixin {
               }
             },
           ),
-          BlocBuilder<HomeCubit, HomeState>(
-            builder: (context, state) {
-              if (!state.loadingStatus.isError) {
-                return IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () {
-                    context.read<HomeCubit>().fetchProjectsOfUser();
-                  },
-                );
-              } else {
-                return const SizedBox();
-              }
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              context.read<HomeCubit>().fetchProjectsOfUser();
             },
           ),
         ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
-          if (state.loadingStatus.isLoading) {
-            return const Center(
-              child: LoadingView(),
-            );
-          }
           if (state.loadingStatus.isError) {
             return Center(
               child: IconButton(
@@ -97,28 +85,39 @@ class _HomeViewState extends State<HomeView> with AfterLayoutMixin {
           return RefreshIndicator(
             onRefresh: () async =>
                 context.read<HomeCubit>().fetchProjectsOfUser(),
-            child: ListView.builder(
-              itemCount: state.projects.length,
-              itemBuilder: (context, index) {
-                final project = state.projects[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Card(
-                    child: ListTile(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (context) => ProjectView(
-                            project: project,
-                          ),
-                        ),
+            child: Skeletonizer(
+              enabled: state.loadingStatus.isLoading,
+              child: ListView.builder(
+                itemCount: state.projects.length,
+                itemBuilder: (context, index) {
+                  final project = state.projects[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Card(
+                      child: ListTile(
+                        onTap: () {
+                          if (project.pages.isEmpty) {
+                            context.showSnackBar(
+                              'Page is not designed, please design it',
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) => ProjectView(
+                                  project: project,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        title: Text(project.projectName),
+                        subtitle: Text(project.createdBy.email ?? 'No info'),
                       ),
-                      title: Text(project.projectName),
-                      subtitle: Text(project.createdBy.email ?? 'No info'),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           );
         },

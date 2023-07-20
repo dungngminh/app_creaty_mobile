@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:app_creaty_mobile/domain/models/app_creaty_creator.dart';
 import 'package:app_creaty_mobile/domain/models/app_creaty_project.dart';
@@ -13,10 +12,10 @@ class ProjectDatabaseService {
   final SupabaseClient _supabaseClient;
 
   Future<List<AppCreatyProject>> getProjects(AppCreatyCreator user) async {
-    log(user.toJson().toString());
     final results = await _supabaseClient
         .from(_projectTable)
-        .select<List<Map<String, dynamic>>>();
+        .select<List<Map<String, dynamic>>>()
+        .eq('created_by->>id', user.id);
     return results.map<AppCreatyProject>(AppCreatyProject.fromJson).toList();
   }
 

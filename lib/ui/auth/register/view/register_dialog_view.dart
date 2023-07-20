@@ -214,16 +214,9 @@ class _RegisterDialogViewState extends State<RegisterDialogView> {
                   ),
                   gap16,
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      FilledButton.tonal(
-                        child: const Text('Localhost'),
-                        onPressed: () => context
-                          ..read<AppBloc>()
-                              .add(ChangeUser(user: AppCreatyCreator.local()))
-                          ..pop()
-                          ..showSnackBar('Login with localhost user'),
-                      ),
-                      const Spacer(),
+               
                       Row(
                         children: [
                           StreamBuilder(
